@@ -26,6 +26,7 @@ const {
   kFourOhFour,
   kState,
   kOptions,
+  kDisableRequestLogging,
   kPluginNameChain,
   kSchemaErrorFormatter,
   kErrorHandler,
@@ -643,7 +644,8 @@ function fastify (serverOptions) {
       const request = new Request(id, null, req, null, childLogger, onBadUrlContext)
       const reply = new Reply(res, request, childLogger)
 
-      if (disableRequestLogging === false) {
+      childLogger[kDisableRequestLogging] = typeof disableRequestLogging === 'function' ? !!disableRequestLogging(req) : disableRequestLogging
+      if (childLogger[kDisableRequestLogging] === false) {
         childLogger.info({ req: request }, 'incoming request')
       }
 
@@ -668,7 +670,8 @@ function fastify (serverOptions) {
           const request = new Request(id, null, req, null, childLogger, onBadUrlContext)
           const reply = new Reply(res, request, childLogger)
 
-          if (disableRequestLogging === false) {
+          childLogger[kDisableRequestLogging] = typeof disableRequestLogging === 'function' ? !!disableRequestLogging(req) : disableRequestLogging
+          if (childLogger[kDisableRequestLogging] === false) {
             childLogger.info({ req: request }, 'incoming request')
           }
 

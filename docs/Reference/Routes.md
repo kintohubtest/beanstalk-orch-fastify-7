@@ -111,6 +111,10 @@ fastify.route(options)
   Serialization](./Validation-and-Serialization.md#error-handling)
   documentation. Overrides the global schema error formatter handler, and
   anything set by `setSchemaErrorFormatter`, for requests to the route.
+* `handlerTimeout`: application-level timeout in milliseconds (integer > 0)
+  for the route handler, overriding the server-level `handlerTimeout`. On
+  timeout `request.signal` is aborted with `FST_ERR_HANDLER_TIMEOUT` and a 503
+  response is sent through the error handler.
 * `bodyLimit`: prevents the default JSON body parser from parsing request bodies
   larger than this number of bytes. Must be an integer. You may also set this
   option globally when first creating the Fastify instance with

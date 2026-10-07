@@ -643,7 +643,7 @@ function fastify (serverOptions) {
       const request = new Request(id, null, req, null, childLogger, onBadUrlContext)
       const reply = new Reply(res, request, childLogger)
 
-      if (disableRequestLogging === false) {
+      if (isRequestLoggingDisabled(req) === false) {
         childLogger.info({ req: request }, 'incoming request')
       }
 
@@ -657,6 +657,12 @@ function fastify (serverOptions) {
     res.end(body)
   }
 
+  function isRequestLoggingDisabled (req) {
+    return typeof disableRequestLogging === 'function'
+      ? Boolean(disableRequestLogging(req))
+      : disableRequestLogging
+  }
+
   function buildAsyncConstraintCallback (isAsync, req, res) {
     if (isAsync === false) return undefined
     return function onAsyncConstraintError (err) {
@@ -668,7 +674,7 @@ function fastify (serverOptions) {
           const request = new Request(id, null, req, null, childLogger, onBadUrlContext)
           const reply = new Reply(res, request, childLogger)
 
-          if (disableRequestLogging === false) {
+          if (isRequestLoggingDisabled(req) === false) {
             childLogger.info({ req: request }, 'incoming request')
           }
 
@@ -843,7 +849,9 @@ function processOptions (options, defaultRoute, onBadUrl) {
   const genReqId = reqIdGenFactory(requestIdHeader, options.genReqId)
   const requestIdLogLabel = options.requestIdLogLabel || 'reqId'
   options.bodyLimit = options.bodyLimit || defaultInitOptions.bodyLimit
-  const disableRequestLogging = options.disableRequestLogging || false
+  const disableRequestLogging = typeof options.disableRequestLogging === 'function'
+    ? options.disableRequestLogging
+    : (options.disableRequestLogging || false)
 
   const ajvOptions = Object.assign({
     customOptions: {},
@@ -867,12 +875,14 @@ function processOptions (options, defaultRoute, onBadUrl) {
   options.logger = logger
   options.requestIdHeader = requestIdHeader
   options.requestIdLogLabel = requestIdLogLabel
-  options.disableRequestLogging = disableRequestLogging
+  // initial config only holds the boolean form; the function is restored below
+  options.disableRequestLogging = typeof disableRequestLogging === 'function' ? true : disableRequestLogging
   options.ajv = ajvOptions
   options.clientErrorHandler = options.clientErrorHandler || defaultClientErrorHandler
   options.allowErrorHandlerOverride = options.allowErrorHandlerOverride ?? defaultInitOptions.allowErrorHandlerOverride
 
   const initialConfig = getSecuredInitialConfig(options)
+  options.disableRequestLogging = disableRequestLogging
 
   // exposeHeadRoutes have its default set from the validator
   options.exposeHeadRoutes = initialConfig.exposeHeadRoutes

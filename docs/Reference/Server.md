@@ -331,6 +331,17 @@ been sent. By setting this option to `true`, these log messages will be
 disabled. This allows for more flexible request start and end logging by
 attaching custom `onRequest` and `onResponse` hooks.
 
+This option can also be a function that receives the raw incoming request
+(`http.IncomingMessage`) and returns a boolean, which allows disabling request
+logging conditionally, for example for health check endpoints:
+
+```js
+const fastify = require('fastify')({
+  logger: true,
+  disableRequestLogging: (req) => req.url === '/health'
+})
+```
+
 The other log entries that will be disabled are:
 - an error log written by the default `onResponse` hook on reply callback errors
 - the error and info logs written by the `defaultErrorHandler`

@@ -37,6 +37,7 @@ const {
 
 const { createServer } = require('./lib/server')
 const Reply = require('./lib/reply')
+const resolveDisableRequestLogging = require('./lib/disable-request-logging')
 const Request = require('./lib/request')
 const Context = require('./lib/context.js')
 const decorator = require('./lib/decorate')
@@ -643,7 +644,7 @@ function fastify (serverOptions) {
       const request = new Request(id, null, req, null, childLogger, onBadUrlContext)
       const reply = new Reply(res, request, childLogger)
 
-      if (disableRequestLogging === false) {
+      if (resolveDisableRequestLogging(disableRequestLogging, request) === false) {
         childLogger.info({ req: request }, 'incoming request')
       }
 
@@ -668,7 +669,7 @@ function fastify (serverOptions) {
           const request = new Request(id, null, req, null, childLogger, onBadUrlContext)
           const reply = new Reply(res, request, childLogger)
 
-          if (disableRequestLogging === false) {
+          if (resolveDisableRequestLogging(disableRequestLogging, request) === false) {
             childLogger.info({ req: request }, 'incoming request')
           }
 

@@ -324,12 +324,24 @@ Pino interface by having the following methods: `info`, `error`, `debug`,
 <a id="factory-disable-request-logging"></a>
 
 + Default: `false`
++ Accepts a boolean or a function `(request) => boolean`
 
 When logging is enabled, Fastify will issue an `info` level log
 message when a request is received and when the response for that request has
 been sent. By setting this option to `true`, these log messages will be
 disabled. This allows for more flexible request start and end logging by
 attaching custom `onRequest` and `onResponse` hooks.
+
+If a function is given, it is called with the request and the logs are
+disabled for that request when it returns a truthy value. This is useful to
+silence routes such as health checks registered by third-party plugins:
+
+```js
+const fastify = require('fastify')({
+  logger: true,
+  disableRequestLogging: (request) => request.url.startsWith('/health')
+})
+```
 
 The other log entries that will be disabled are:
 - an error log written by the default `onResponse` hook on reply callback errors

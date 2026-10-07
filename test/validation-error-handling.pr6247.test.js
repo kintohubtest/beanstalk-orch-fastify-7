@@ -1,7 +1,23 @@
 'use strict'
 
 const { describe, test } = require('node:test')
+const Joi = require('joi')
 const Fastify = require('..')
+
+const schema = {
+  body: {
+    type: 'object',
+    properties: {
+      name: { type: 'string' },
+      work: { type: 'string' }
+    },
+    required: ['name', 'work']
+  }
+}
+
+function echoBody (req, reply) {
+  reply.code(200).send(req.body.name)
+}
 
 describe('sync and async must work in the same way', () => {
   // Route with custom validator that throws

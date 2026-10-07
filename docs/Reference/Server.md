@@ -331,6 +331,10 @@ been sent. By setting this option to `true`, these log messages will be
 disabled. This allows for more flexible request start and end logging by
 attaching custom `onRequest` and `onResponse` hooks.
 
+The option may also be a function `(request) => boolean`, evaluated for each
+request, which allows disabling request logging conditionally (for example for
+healthcheck routes registered by third party plugins).
+
 The other log entries that will be disabled are:
 - an error log written by the default `onResponse` hook on reply callback errors
 - the error and info logs written by the `defaultErrorHandler`

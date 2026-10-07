@@ -224,6 +224,19 @@ in front.
 > ℹ️ Note:
 >  At the time of writing, only node >= v14.11.0 supports this option
 
+### `handlerTimeout`
+
+<a id="factory-handler-timeout"></a>
+
+Defines the maximum number of milliseconds a route handler may take before a
+`503` (`FST_ERR_HANDLER_TIMEOUT`) is sent. The default `0` disables it. It can
+be overridden per route with the `handlerTimeout` route option. The timeout is
+cooperative: the handler is not killed, but `request.signal` is aborted with
+the timeout error as `reason`. `request.signal` also aborts on client
+disconnect.
+
++ Default: `0`
+
 ### `bodyLimit`
 <a id="factory-body-limit"></a>
 

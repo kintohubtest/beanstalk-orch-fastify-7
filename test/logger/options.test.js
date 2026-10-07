@@ -577,3 +577,22 @@ t.test('logger options', { timeout: 60000 }, async (t) => {
     }
   })
 })
+
+t.test('route logLevel is validated at registration', (t) => {
+  t.plan(3)
+
+  const fastify = Fastify({ logger: { level: 'info', stream: split(JSON.parse) } })
+  t.after(() => fastify.close())
+
+  t.assert.throws(
+    () => fastify.get('/bad', { logLevel: 'nope' }, () => {}),
+    { code: 'FST_ERR_ROUTE_LOG_LEVEL_INVALID' }
+  )
+  t.assert.doesNotThrow(() => fastify.get('/ok', { logLevel: 'warn' }, () => {}))
+
+  const custom = Fastify({
+    logger: { level: 'info', customLevels: { foo: 35 }, stream: split(JSON.parse) }
+  })
+  t.after(() => custom.close())
+  t.assert.doesNotThrow(() => custom.get('/foo', { logLevel: 'foo' }, () => {}))
+})

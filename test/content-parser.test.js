@@ -65,38 +65,6 @@ test('getParser', async t => {
     t.assert.strictEqual(fastify[keys.kContentTypeParser].getParser('text/htmlINVALID')?.fn, undefined)
   })
 
-  await t.test('should return matching parser with caching /1', t => {
-    t.plan(6)
-
-    const fastify = Fastify()
-
-    fastify.addContentTypeParser('text/html', first)
-
-    t.assert.strictEqual(fastify[keys.kContentTypeParser].getParser('text/html').fn, first)
-    t.assert.strictEqual(fastify[keys.kContentTypeParser].cache.size, 0)
-    t.assert.strictEqual(fastify[keys.kContentTypeParser].getParser('text/html ').fn, first)
-    t.assert.strictEqual(fastify[keys.kContentTypeParser].cache.size, 1)
-    t.assert.strictEqual(fastify[keys.kContentTypeParser].getParser('text/html ').fn, first)
-    t.assert.strictEqual(fastify[keys.kContentTypeParser].cache.size, 1)
-  })
-
-  await t.test('should return matching parser with caching /2', t => {
-    t.plan(8)
-
-    const fastify = Fastify()
-
-    fastify.addContentTypeParser('text/html', first)
-
-    t.assert.strictEqual(fastify[keys.kContentTypeParser].getParser('text/html').fn, first)
-    t.assert.strictEqual(fastify[keys.kContentTypeParser].cache.size, 0)
-    t.assert.strictEqual(fastify[keys.kContentTypeParser].getParser('text/HTML').fn, first)
-    t.assert.strictEqual(fastify[keys.kContentTypeParser].cache.size, 1)
-    t.assert.strictEqual(fastify[keys.kContentTypeParser].getParser('TEXT/html').fn, first)
-    t.assert.strictEqual(fastify[keys.kContentTypeParser].cache.size, 2)
-    t.assert.strictEqual(fastify[keys.kContentTypeParser].getParser('TEXT/html').fn, first)
-    t.assert.strictEqual(fastify[keys.kContentTypeParser].cache.size, 2)
-  })
-
   await t.test('should return matching parser with caching /3', t => {
     t.plan(6)
 
@@ -208,7 +176,7 @@ test('add', async t => {
     const fastify = Fastify()
     const contentTypeParser = fastify[keys.kContentTypeParser]
 
-    t.assert.ifError(contentTypeParser.add('test', {}, first))
+    t.assert.ifError(contentTypeParser.add('test/type', {}, first))
     t.assert.ifError(contentTypeParser.add(/test/, {}, first))
     t.assert.throws(
       () => contentTypeParser.add({}, {}, first),
@@ -552,30 +520,6 @@ test('content-type match parameters - string 1', async t => {
   })
 })
 
-test('content-type match parameters - regexp', async t => {
-  t.plan(1)
-
-  const fastify = Fastify()
-  fastify.removeAllContentTypeParsers()
-  fastify.addContentTypeParser(/application\/json; charset=utf8/, function (request, body, done) {
-    t.assert.ok('should be called')
-    done(null, body)
-  })
-
-  fastify.post('/', async () => {
-    return 'ok'
-  })
-
-  await fastify.inject({
-    method: 'POST',
-    path: '/',
-    headers: {
-      'content-type': 'application/json; charset=utf8'
-    },
-    body: ''
-  })
-})
-
 test('content-type fail when parameters not match - string 1', async t => {
   t.plan(1)
 
@@ -702,32 +646,9 @@ test('edge case content-type - ;', async t => {
 
   const fastify = Fastify()
   fastify.removeAllContentTypeParsers()
-  fastify.addContentTypeParser(';', function (request, body, done) {
-    t.assert.fail('should not be called')
-    done(null, body)
-  })
-
-  fastify.post('/', async () => {
-    return 'ok'
-  })
-
-  await fastify.inject({
-    method: 'POST',
-    path: '/',
-    headers: {
-      'content-type': 'application/json; foo=bar; charset=utf8'
-    },
-    body: ''
-  })
-
-  await fastify.inject({
-    method: 'POST',
-    path: '/',
-    headers: {
-      'content-type': 'image/jpeg'
-    },
-    body: ''
-  })
-
-  t.assert.ok('end')
+  t.assert.throws(() => {
+    fastify.addContentTypeParser(';', function (request, body, done) {
+      done(null, body)
+    })
+  }, { code: 'FST_ERR_CTP_INVALID_TYPE' })
 })

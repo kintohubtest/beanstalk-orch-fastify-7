@@ -686,7 +686,9 @@ If you are sending a stream and you have not set a `'Content-Type'` header,
 *send* will set it to `'application/octet-stream'`.
 
 As noted above, streams are considered to be pre-serialized, so they will be
-sent unmodified without response validation.
+sent unmodified without response validation. When using HTTP/2, applications
+should chunk large emissions from their own streams, as Fastify only chunks
+large non-stream (string or Buffer) payloads.
 
 See special note about error handling for streams in
 [`setErrorHandler`](./Server.md#seterrorhandler).

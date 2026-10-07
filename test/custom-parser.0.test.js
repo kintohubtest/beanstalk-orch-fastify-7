@@ -354,7 +354,7 @@ test('catch all content type parser', async (t) => {
     method: 'POST',
     body: 'hello',
     headers: {
-      'Content-Type': 'very-weird-content-type'
+      'Content-Type': 'very-weird-content-type/foo'
     }
   })
 
@@ -404,7 +404,7 @@ test('catch all content type parser should not interfere with other conte type p
     method: 'POST',
     body: 'hello',
     headers: {
-      'Content-Type': 'very-weird-content-type'
+      'Content-Type': 'very-weird-content-type/foo'
     }
   })
 

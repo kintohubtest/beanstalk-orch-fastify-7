@@ -66,14 +66,15 @@ test('getParser', async t => {
   })
 
   await t.test('should return matching parser with caching /1', t => {
-    t.plan(6)
+    t.plan(7)
 
     const fastify = Fastify()
 
     fastify.addContentTypeParser('text/html', first)
 
-    t.assert.strictEqual(fastify[keys.kContentTypeParser].getParser('text/html').fn, first)
     t.assert.strictEqual(fastify[keys.kContentTypeParser].cache.size, 0)
+    t.assert.strictEqual(fastify[keys.kContentTypeParser].getParser('text/html').fn, first)
+    t.assert.strictEqual(fastify[keys.kContentTypeParser].cache.size, 1)
     t.assert.strictEqual(fastify[keys.kContentTypeParser].getParser('text/html ').fn, first)
     t.assert.strictEqual(fastify[keys.kContentTypeParser].cache.size, 1)
     t.assert.strictEqual(fastify[keys.kContentTypeParser].getParser('text/html ').fn, first)
@@ -81,20 +82,21 @@ test('getParser', async t => {
   })
 
   await t.test('should return matching parser with caching /2', t => {
-    t.plan(8)
+    t.plan(9)
 
     const fastify = Fastify()
 
     fastify.addContentTypeParser('text/html', first)
 
-    t.assert.strictEqual(fastify[keys.kContentTypeParser].getParser('text/html').fn, first)
     t.assert.strictEqual(fastify[keys.kContentTypeParser].cache.size, 0)
+    t.assert.strictEqual(fastify[keys.kContentTypeParser].getParser('text/html').fn, first)
+    t.assert.strictEqual(fastify[keys.kContentTypeParser].cache.size, 1)
     t.assert.strictEqual(fastify[keys.kContentTypeParser].getParser('text/HTML').fn, first)
     t.assert.strictEqual(fastify[keys.kContentTypeParser].cache.size, 1)
     t.assert.strictEqual(fastify[keys.kContentTypeParser].getParser('TEXT/html').fn, first)
-    t.assert.strictEqual(fastify[keys.kContentTypeParser].cache.size, 2)
+    t.assert.strictEqual(fastify[keys.kContentTypeParser].cache.size, 1)
     t.assert.strictEqual(fastify[keys.kContentTypeParser].getParser('TEXT/html').fn, first)
-    t.assert.strictEqual(fastify[keys.kContentTypeParser].cache.size, 2)
+    t.assert.strictEqual(fastify[keys.kContentTypeParser].cache.size, 1)
   })
 
   await t.test('should return matching parser with caching /3', t => {
@@ -125,7 +127,7 @@ test('getParser', async t => {
   })
 
   await t.test('should return parser that catches all if no other is set', t => {
-    t.plan(3)
+    t.plan(2)
 
     const fastify = Fastify()
 
@@ -134,7 +136,6 @@ test('getParser', async t => {
 
     t.assert.strictEqual(fastify[keys.kContentTypeParser].getParser('image/gif').fn, first)
     t.assert.strictEqual(fastify[keys.kContentTypeParser].getParser('text/html').fn, second)
-    t.assert.strictEqual(fastify[keys.kContentTypeParser].getParser('text').fn, first)
   })
 
   await t.test('should return undefined if no matching parser exist', t => {
@@ -208,7 +209,7 @@ test('add', async t => {
     const fastify = Fastify()
     const contentTypeParser = fastify[keys.kContentTypeParser]
 
-    t.assert.ifError(contentTypeParser.add('test', {}, first))
+    t.assert.ifError(contentTypeParser.add('test/type', {}, first))
     t.assert.ifError(contentTypeParser.add(/test/, {}, first))
     t.assert.throws(
       () => contentTypeParser.add({}, {}, first),
@@ -557,7 +558,7 @@ test('content-type match parameters - regexp', async t => {
 
   const fastify = Fastify()
   fastify.removeAllContentTypeParsers()
-  fastify.addContentTypeParser(/application\/json; charset=utf8/, function (request, body, done) {
+  fastify.addContentTypeParser(/application\/json; charset="utf8"/, function (request, body, done) {
     t.assert.ok('should be called')
     done(null, body)
   })
@@ -698,14 +699,14 @@ test('content-type regexp list should be cloned when plugin override', async t =
 })
 
 test('edge case content-type - ;', async t => {
-  t.plan(1)
+  t.plan(2)
 
   const fastify = Fastify()
   fastify.removeAllContentTypeParsers()
-  fastify.addContentTypeParser(';', function (request, body, done) {
+  t.assert.throws(() => fastify.addContentTypeParser(';', function (request, body, done) {
     t.assert.fail('should not be called')
     done(null, body)
-  })
+  }), { code: 'FST_ERR_CTP_INVALID_TYPE' })
 
   fastify.post('/', async () => {
     return 'ok'

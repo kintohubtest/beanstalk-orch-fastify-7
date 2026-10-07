@@ -682,6 +682,10 @@ fastify.get('/json', options, function (request, reply) {
 #### Streams
 <a id="send-streams"></a>
 
+On HTTP/2, large non-stream payloads (`string` and `Buffer`) are written in
+chunks. Streams provided by the user are not modified, so applications should
+chunk large stream emissions themselves.
+
 If you are sending a stream and you have not set a `'Content-Type'` header,
 *send* will set it to `'application/octet-stream'`.
 

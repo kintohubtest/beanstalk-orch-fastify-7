@@ -1,5 +1,4 @@
 'use strict'
-/* eslint-disable no-unused-vars */
 
 const split = require('split2')
 const { test } = require('node:test')

@@ -34,6 +34,8 @@ Request is a core Fastify object containing the following fields:
 - `originalUrl` - Similar to `url`, allows access to the original `url` in
   case of internal re-routing.
 - `is404` - `true` if request is being handled by 404 handler, `false` otherwise.
+- `mediaType` - The essence media type of the `content-type` header (lowercase,
+  without parameters such as `charset`), or `undefined` if the header is absent.
 - `socket` - The underlying connection of the incoming request.
 - `context` - Deprecated, use `request.routeOptions.config` instead. A Fastify
   internal object. Do not use or modify it directly. It is useful to access one

@@ -635,6 +635,12 @@ function fastify (serverOptions) {
     fourOhFour.router.lookup(req, res)
   }
 
+  function isRequestLoggingDisabled (request) {
+    return typeof disableRequestLogging === 'function'
+      ? disableRequestLogging(request) === true
+      : disableRequestLogging
+  }
+
   function onBadUrl (path, req, res) {
     if (options.frameworkErrors) {
       const id = getGenReqId(onBadUrlContext.server, req)
@@ -643,7 +649,7 @@ function fastify (serverOptions) {
       const request = new Request(id, null, req, null, childLogger, onBadUrlContext)
       const reply = new Reply(res, request, childLogger)
 
-      if (disableRequestLogging === false) {
+      if (isRequestLoggingDisabled(request) === false) {
         childLogger.info({ req: request }, 'incoming request')
       }
 
@@ -668,7 +674,7 @@ function fastify (serverOptions) {
           const request = new Request(id, null, req, null, childLogger, onBadUrlContext)
           const reply = new Reply(res, request, childLogger)
 
-          if (disableRequestLogging === false) {
+          if (isRequestLoggingDisabled(request) === false) {
             childLogger.info({ req: request }, 'incoming request')
           }
 
@@ -872,7 +878,12 @@ function processOptions (options, defaultRoute, onBadUrl) {
   options.clientErrorHandler = options.clientErrorHandler || defaultClientErrorHandler
   options.allowErrorHandlerOverride = options.allowErrorHandlerOverride ?? defaultInitOptions.allowErrorHandlerOverride
 
-  const initialConfig = getSecuredInitialConfig(options)
+  // the validator only accepts booleans, a function is reported as `false`
+  const initialConfig = getSecuredInitialConfig(
+    typeof disableRequestLogging === 'function'
+      ? Object.assign({}, options, { disableRequestLogging: false })
+      : options
+  )
 
   // exposeHeadRoutes have its default set from the validator
   options.exposeHeadRoutes = initialConfig.exposeHeadRoutes

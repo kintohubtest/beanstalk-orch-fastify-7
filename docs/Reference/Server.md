@@ -826,7 +826,9 @@ const fastify = require('fastify')({
 <a id="on-bad-url"></a>
 
 Fastify uses [find-my-way](https://github.com/delvedor/find-my-way) which supports,
-can pass a default route with the option defaultRoute.
+can pass a default route with the option defaultRoute. Note that the handler
+receives the raw Node.js `IncomingMessage` and `ServerResponse` objects, not
+Fastify's `Request` and `Reply`.
 
 ```js
 const fastify = require('fastify')({
@@ -917,7 +919,9 @@ attacks](https://www.owasp.org/index.php/Regular_expression_Denial_of_Service_-_
 
 Fastify uses [find-my-way](https://github.com/delvedor/find-my-way) which supports,
 the use case of a badly formatted url (eg: /hello/%world), by default find-my-way
-will invoke the defaultRoute, unless you specify the onBadUrl option.
+will invoke the defaultRoute, unless you specify the onBadUrl option. Like
+`defaultRoute`, it receives the raw `IncomingMessage` and `ServerResponse`
+objects.
 
 ```js
 const fastify = require('fastify')({

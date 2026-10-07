@@ -12,6 +12,7 @@ const {
   kChildren,
   kServerBindings,
   kBodyLimit,
+  kHandlerTimeout,
   kSupportedHTTPMethods,
   kRoutePrefix,
   kLogLevel,
@@ -149,6 +150,7 @@ function fastify (serverOptions) {
     [kChildren]: [],
     [kServerBindings]: [],
     [kBodyLimit]: options.bodyLimit,
+    [kHandlerTimeout]: options.handlerTimeout,
     [kRoutePrefix]: '',
     [kLogLevel]: '',
     [kLogSerializers]: null,
@@ -879,6 +881,7 @@ function processOptions (options, defaultRoute, onBadUrl) {
 
   // we need to set this before calling createServer
   options.http2SessionTimeout = initialConfig.http2SessionTimeout
+  options.handlerTimeout = initialConfig.handlerTimeout
 
   options.routerOptions = buildRouterOptions(options, {
     defaultRoute,

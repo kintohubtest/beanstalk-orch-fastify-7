@@ -17,6 +17,7 @@ describes the properties available in that options object.
   - [`forceCloseConnections`](#forcecloseconnections)
   - [`maxRequestsPerSocket`](#maxrequestspersocket)
   - [`requestTimeout`](#requesttimeout)
+  - [`handlerTimeout`](#handlertimeout)
   - [`bodyLimit`](#bodylimit)
   - [`onProtoPoisoning`](#onprotopoisoning)
   - [`onConstructorPoisoning`](#onconstructorpoisoning)
@@ -205,6 +206,18 @@ ignored.
 
 > ℹ️ Note:
 >  At the time of writing, only node >= v16.10.0 supports this option.
+
+### `handlerTimeout`
+<a id="factory-handler-timeout"></a>
+
++ Default: `0` (no timeout)
+
+Application-level timeout, in milliseconds, for the request handler lifecycle.
+When it elapses before a response is sent, `request.signal` is aborted with a
+`FST_ERR_HANDLER_TIMEOUT` error and a 503 response is sent through the error
+handler. The handler is not killed: use `request.signal` to cancel downstream
+work. It can be overridden per route with the `handlerTimeout` route option
+(an integer > 0). `request.signal` also aborts when the client disconnects.
 
 ### `requestTimeout`
 <a id="factory-request-timeout"></a>

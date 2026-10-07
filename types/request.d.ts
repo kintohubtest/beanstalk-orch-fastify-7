@@ -77,6 +77,7 @@ export interface FastifyRequest<RouteGeneric extends RouteGenericInterface = Rou
   readonly hostname: string;
   readonly url: string;
   readonly originalUrl: string;
+  readonly mediaType: string;
   readonly protocol: 'http' | 'https';
   readonly method: string;
   readonly routeOptions: Readonly<RequestRouteOptions<ContextConfig, SchemaCompiler>>

@@ -31,6 +31,8 @@ Request is a core Fastify object containing the following fields:
 - `protocol` - The protocol of the incoming request (`https` or `http`).
 - `method` - The method of the incoming request.
 - `url` - The URL of the incoming request.
+- `mediaType` - The lower-cased media type (`type/subtype`, without parameters)
+  parsed from the `content-type` header, or an empty string if absent/invalid.
 - `originalUrl` - Similar to `url`, allows access to the original `url` in
   case of internal re-routing.
 - `is404` - `true` if request is being handled by 404 handler, `false` otherwise.

@@ -325,6 +325,11 @@ Pino interface by having the following methods: `info`, `error`, `debug`,
 
 + Default: `false`
 
+Accepts a boolean or a function `(request) => boolean`. When a function is
+given it is called for every request and logging is disabled for the requests
+for which it returns `true` (useful for health checks or metrics routes
+registered by third-party plugins).
+
 When logging is enabled, Fastify will issue an `info` level log
 message when a request is received and when the response for that request has
 been sent. By setting this option to `true`, these log messages will be

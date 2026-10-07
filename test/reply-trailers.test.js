@@ -328,7 +328,7 @@ test('remove all trailers', (t, testDone) => {
     t.assert.ok(!res.headers.trailer)
     t.assert.ok(!res.trailers.etag)
     t.assert.ok(!res.trailers['should-not-call'])
-    t.assert.ok(!res.headers['content-length'])
+    t.assert.strictEqual(res.headers['content-length'], '0')
     testDone()
   })
 })

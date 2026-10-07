@@ -339,11 +339,11 @@ type InitialConfig = Readonly<{
     constraints?: {
       [name: string]: ConstraintStrategy<FindMyWayVersion<RawServerDefault>, unknown>
     }
-    defaultRoute?: (req: FastifyRequest, res: FastifyReply) => void,
+    defaultRoute?: (req: RawRequestDefaultExpression<RawServerDefault>, res: RawReplyDefaultExpression<RawServerDefault>) => void,
     ignoreDuplicateSlashes?: boolean,
     ignoreTrailingSlash?: boolean,
     maxParamLength?: number,
-    onBadUrl?: (path: string, req: FastifyRequest, res: FastifyReply) => void,
+    onBadUrl?: (path: string, req: RawRequestDefaultExpression<RawServerDefault>, res: RawReplyDefaultExpression<RawServerDefault>) => void,
     querystringParser?: (str: string) => { [key: string]: unknown },
     useSemicolonDelimiter?: boolean,
   }

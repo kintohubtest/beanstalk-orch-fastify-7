@@ -685,6 +685,10 @@ fastify.get('/json', options, function (request, reply) {
 If you are sending a stream and you have not set a `'Content-Type'` header,
 *send* will set it to `'application/octet-stream'`.
 
+When using HTTP/2, Fastify chunks large string and Buffer payloads, but
+streams you provide are sent unmodified, so applications should chunk large
+stream emissions themselves.
+
 As noted above, streams are considered to be pre-serialized, so they will be
 sent unmodified without response validation.
 

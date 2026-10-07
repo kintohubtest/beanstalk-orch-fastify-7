@@ -81,6 +81,7 @@ export interface FastifyRequest<RouteGeneric extends RouteGenericInterface = Rou
   readonly method: string;
   readonly routeOptions: Readonly<RequestRouteOptions<ContextConfig, SchemaCompiler>>
   readonly is404: boolean;
+  readonly mediaType: string | undefined;
   readonly socket: RawRequest['socket'];
 
   getValidationFunction(httpPart: HTTPRequestPart): ValidationFunction

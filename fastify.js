@@ -643,7 +643,7 @@ function fastify (serverOptions) {
       const request = new Request(id, null, req, null, childLogger, onBadUrlContext)
       const reply = new Reply(res, request, childLogger)
 
-      if (disableRequestLogging === false) {
+      if (!isRequestLoggingDisabled(disableRequestLogging, req)) {
         childLogger.info({ req: request }, 'incoming request')
       }
 
@@ -668,7 +668,7 @@ function fastify (serverOptions) {
           const request = new Request(id, null, req, null, childLogger, onBadUrlContext)
           const reply = new Reply(res, request, childLogger)
 
-          if (disableRequestLogging === false) {
+          if (!isRequestLoggingDisabled(disableRequestLogging, req)) {
             childLogger.info({ req: request }, 'incoming request')
           }
 
@@ -898,6 +898,10 @@ function processOptions (options, defaultRoute, onBadUrl) {
     hasLogger,
     initialConfig
   }
+}
+
+function isRequestLoggingDisabled (disableRequestLogging, req) {
+  return typeof disableRequestLogging === 'function' ? Boolean(disableRequestLogging(req)) : disableRequestLogging
 }
 
 function defaultBuildPrettyMeta (route) {

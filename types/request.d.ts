@@ -25,6 +25,7 @@ export interface RequestRouteOptions<ContextConfig = ContextConfigDefault, Schem
   // `url` can be `undefined` for instance when `request.is404` is true
   url: string | undefined;
   bodyLimit: number;
+  handlerTimeout: number;
   attachValidation: boolean;
   logLevel: string;
   exposeHeadRoute: boolean;
@@ -57,6 +58,8 @@ export interface FastifyRequest<RouteGeneric extends RouteGenericInterface = Rou
   id: string;
   params: RequestType['params']; // deferred inference
   raw: RawRequest;
+  /** Aborted when `handlerTimeout` elapses or the client disconnects. */
+  readonly signal: AbortSignal;
   query: RequestType['query'];
   headers: RawRequest['headers'] & RequestType['headers']; // this enables the developer to extend the existing http(s|2) headers list
   log: Logger;

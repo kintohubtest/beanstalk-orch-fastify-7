@@ -10,6 +10,7 @@ let lightMyRequest
 const {
   kAvvioBoot,
   kChildren,
+  kDisableRequestLogging,
   kServerBindings,
   kBodyLimit,
   kSupportedHTTPMethods,
@@ -643,7 +644,11 @@ function fastify (serverOptions) {
       const request = new Request(id, null, req, null, childLogger, onBadUrlContext)
       const reply = new Reply(res, request, childLogger)
 
-      if (disableRequestLogging === false) {
+      const disableRequestLog = typeof disableRequestLogging === 'function'
+        ? disableRequestLogging(request)
+        : disableRequestLogging
+      childLogger[kDisableRequestLogging] = disableRequestLog
+      if (disableRequestLog === false) {
         childLogger.info({ req: request }, 'incoming request')
       }
 
@@ -668,7 +673,11 @@ function fastify (serverOptions) {
           const request = new Request(id, null, req, null, childLogger, onBadUrlContext)
           const reply = new Reply(res, request, childLogger)
 
-          if (disableRequestLogging === false) {
+          const disableRequestLog = typeof disableRequestLogging === 'function'
+            ? disableRequestLogging(request)
+            : disableRequestLogging
+          childLogger[kDisableRequestLogging] = disableRequestLog
+          if (disableRequestLog === false) {
             childLogger.info({ req: request }, 'incoming request')
           }
 
